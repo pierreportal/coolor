@@ -1,4 +1,4 @@
-use crate::color_factory::{ColorConverter, Hsl, Lab, Rgb};
+use crate::color_factory::{Cmyk, ColorConverter, Hsl, Lab, Rgb};
 
 #[derive(Debug)]
 #[allow(unused)]
@@ -7,6 +7,7 @@ pub struct Color {
     pub rgb: Rgb,
     pub hsl: Hsl,
     pub lab: Lab,
+    pub cmyk: Cmyk,
     pub luminance_wcag: f32,
 }
 
@@ -18,12 +19,14 @@ impl Color {
         let hex = hex_string.into();
         let lab = ColorConverter::rgb_to_lab(&rgb);
         let luminance_wcag = ColorConverter::rgb_to_luminance_wcag(&rgb);
+        let cmyk = ColorConverter::rgb_to_cmyk(&rgb);
 
         Self {
             hex,
             rgb,
             hsl,
             lab,
+            cmyk,
             luminance_wcag,
         }
     }
@@ -33,12 +36,14 @@ impl Color {
         let hex = ColorConverter::rgb_to_hex(&rgb);
         let lab = ColorConverter::rgb_to_lab(&rgb);
         let luminance_wcag = ColorConverter::rgb_to_luminance_wcag(&rgb);
+        let cmyk = ColorConverter::rgb_to_cmyk(&rgb);
 
         Self {
             hex,
             rgb,
             hsl,
             lab,
+            cmyk,
             luminance_wcag,
         }
     }

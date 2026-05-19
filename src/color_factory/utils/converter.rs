@@ -47,6 +47,14 @@ pub struct Lab {
     pub b: f32,
 }
 
+#[derive(Debug)]
+pub struct Cmyk {
+    pub c: f32,
+    pub m: f32,
+    pub y: f32,
+    pub k: f32,
+}
+
 #[allow(unused)]
 pub trait ToString {
     fn to_string(&self) -> String;
@@ -62,7 +70,7 @@ impl ToString for Rgb {
 impl ToString for Hsl {
     fn to_string(&self) -> String {
         let Hsl { h, s, l } = self;
-        format!("hsl({},{},{})", h, s, l)
+        format!("hsl({}°,{}%,{}%)", h, s, l)
     }
 }
 
@@ -70,6 +78,13 @@ impl ToString for Lab {
     fn to_string(&self) -> String {
         let Lab { l, a, b } = self;
         format!("lab({},{},{})", l, a, b)
+    }
+}
+
+impl ToString for Cmyk {
+    fn to_string(&self) -> String {
+        let Cmyk { c, m, y, k } = self;
+        format!("cmyk({}%,{}%,{}%,{}%)", c, m, y, k)
     }
 }
 
@@ -166,6 +181,29 @@ impl ColorConverter {
         let h_b = decimal_to_hex(rgb.b);
 
         format!("#{}{}{}", h_r, h_g, h_b)
+    }
+
+    pub fn rgb_to_cmyk(rgb: &Rgb) -> Cmyk {
+        let (r, g, b) = normalize_rgb(rgb);
+        let k = 1.0 - max!(r, g, b);
+        if k == 0.0 {
+            return Cmyk {
+                c: 0.0,
+                m: 0.0,
+                y: 0.0,
+                k: 1.0,
+            };
+        }
+        let c = ((1.0 - r - k) / (1.0 - k)) * 100.0;
+        let m = ((1.0 - g - k) / (1.0 - k)) * 100.0;
+        let y = ((1.0 - b - k) / (1.0 - k)) * 100.0;
+
+        Cmyk {
+            c,
+            m,
+            y,
+            k: k * 100.0,
+        }
     }
 
     pub fn hex_to_rgb(hex_string: &str) -> Rgb {
